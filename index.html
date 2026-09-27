@@ -1,1079 +1,124 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  BookOpen, Award, CheckCircle, Flame, Clock, Play, Pause, RotateCcw,
-  Volume2, VolumeX, Search, Sparkles, FileText, Download, UserCheck,
-  TrendingUp, Calendar, ChevronRight, HelpCircle, Layers, X, Info, Edit3,
-  List, ShieldCheck, Heart, Share2, Send, Cpu, Compass, HardDrive, Filter, Target
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduTrack AI - Covenant University</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel compiler for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+  <div id="root"></div>
 
-const COURSE_DIRECTORY = [
-  // 100 LEVEL
-  { code: 'MAT111', title: 'Algebra & Trigonometry', level: 100, college: 'CST', units: 3, desc: 'Set theory, real numbers, quadratic equations, polynomials, binomial theorem, trigonometric functions and identities.' },
-  { code: 'MAT121', title: 'Calculus', level: 100, college: 'CST', units: 3, desc: 'Limits, continuity, differentiation, integration, applications to area and velocity.' },
-  { code: 'PHY111', title: 'General Physics I', level: 100, college: 'CST', units: 3, desc: 'Mechanics, properties of matter, thermal physics, kinematics, and dynamics.' },
-  { code: 'PHY121', title: 'General Physics II', level: 100, college: 'CST', units: 3, desc: 'Electricity, magnetism, optics, wave motion, and basic atomic structure.' },
-  { code: 'CHM111', title: 'General Chemistry I', level: 100, college: 'CST', units: 3, desc: 'Atomic structure, periodic table, chemical bonding, stoichiometry, gas laws.' },
-  { code: 'CHM121', title: 'General Chemistry II', level: 100, college: 'CST', units: 3, desc: 'Thermochemistry, chemical equilibrium, reaction kinetics, electrochemistry.' },
-  { code: 'CSC111', title: 'Introduction to Computer Science', level: 100, college: 'CST', units: 2, desc: 'Overview of computing systems, algorithms, flowcharts, basic problem solving.' },
-  { code: 'ARC111', title: 'Architectural Graphics', level: 100, college: 'CST', units: 2, desc: 'Drafting principles, projections, orthographic views, freehand sketching.' },
-  { code: 'CPE112', title: 'Introduction to Computer Engineering', level: 100, college: 'COE', units: 2, desc: 'Fundamentals of computing hardware, logic systems, binary representations.' },
-  { code: 'PEE101', title: 'Introduction to Petroleum Industry', level: 100, college: 'COE', units: 2, desc: 'Overview of upstream and downstream petroleum processes, energy security.' },
-  { code: 'GST111', title: 'Communication in English I', level: 100, college: 'CORE', units: 2, desc: 'Study skills, comprehension, listening strategies, paragraph development.' },
-  { code: 'GST121', title: 'Communication in English II', level: 100, college: 'CORE', units: 2, desc: 'Report writing, academic essays, public speaking, research citations.' },
-  { code: 'GST122', title: 'Nigerian Peoples and Culture', level: 100, college: 'CORE', units: 2, desc: 'Cultural zones, ethnic history, social systems, integration in Nigeria.' },
-  { code: 'TMC111', title: 'Total Man Concept I', level: 100, college: 'CORE', units: 1, desc: 'Mental, spiritual, and physical discipline, self-discovery principles.' },
-  { code: 'TMC121', title: 'Total Man Concept II', level: 100, college: 'CORE', units: 1, desc: 'Character development, personal vision, goal setting, moral ethics.' },
-  { code: 'EDS111', title: 'Entrepreneurship Development I', level: 100, college: 'CORE', units: 1, desc: 'Entrepreneurial mindset, opportunity identification, innovation basics.' },
-  { code: 'EDS121', title: 'Entrepreneurship Development II', level: 100, college: 'CORE', units: 1, desc: 'Feasibility studies, small business ideation, customer validation.' },
-  { code: 'LDR111', title: 'Leadership Development I', level: 100, college: 'CLDS', units: 1, desc: 'Foundational leadership concepts, influence, integrity, self-mastery.' },
-  { code: 'ACC111', title: 'Principles of Accounting I', level: 100, college: 'CMSS', units: 3, desc: 'Double-entry bookkeeping, trial balance, ledger posting, financial statements.' },
-  { code: 'ECN111', title: 'Principles of Economics I', level: 100, college: 'CMSS', units: 3, desc: 'Microeconomics: supply and demand, elasticity, price theory, market structures.' },
-  { code: 'ECN121', title: 'Principles of Economics II', level: 100, college: 'CMSS', units: 3, desc: 'Macroeconomics: national income, inflation, fiscal and monetary policies.' },
-  { code: 'FIN101', title: 'Introduction to Finance', level: 100, college: 'CMSS', units: 3, desc: 'Role of financial markets, interest rates, financial institutions overview.' },
-  { code: 'BUA111', title: 'Introduction to Business I', level: 100, college: 'CMSS', units: 3, desc: 'Business ownership forms, management principles, market environments.' },
-  { code: 'MAC111', title: 'Introduction to Mass Communication', level: 100, college: 'CMSS', units: 3, desc: 'Mass media channels, communication theory, societal impact of media.' },
-  { code: 'IRL111', title: 'Introduction to International Relations', level: 100, college: 'CMSS', units: 3, desc: 'State sovereignty, international organizations, diplomacy fundamentals.' },
-  { code: 'SOC111', title: 'Introduction to Sociology', level: 100, college: 'CMSS', units: 3, desc: 'Social institutions, culture, socialization, group dynamics.' },
-  { code: 'ENG101', title: 'Survey of English Language', level: 100, college: 'CLDS', units: 3, desc: 'Historical development of English, syntax, structural linguistics.' },
-  { code: 'ENG102', title: 'Spoken English', level: 100, college: 'CLDS', units: 2, desc: 'Phonetics, stress patterns, intonation, speech production practice.' },
-  { code: 'POS111', title: 'Elements of Political Science', level: 100, college: 'CLDS', units: 3, desc: 'Political concepts, power, authority, governance systems, statecraft.' },
-  { code: 'POS112', title: 'Nigerian Constitutional Development', level: 100, college: 'CLDS', units: 3, desc: 'Constitutional history from colonial eras to modern federalism.' },
-  { code: 'PSY111', title: 'Introduction to Psychology I', level: 100, college: 'CLDS', units: 3, desc: 'Biological bases of behavior, perception, learning theories, memory.' },
-  { code: 'PSY125', title: 'Introduction to Psychology II', level: 100, college: 'CLDS', units: 3, desc: 'Human development, personality theories, motivation, abnormal psychology.' },
-  { code: 'PSS111', title: 'Intro to Policy & Strategic Studies', level: 100, college: 'CLDS', units: 3, desc: 'Public policy formulations, strategic analysis, decision-making frameworks.' },
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-  // 200 LEVEL
-  { code: 'GET201', title: 'Applied Mechanics', level: 200, college: 'COE', units: 3, desc: 'Statics, force systems, friction, centroids, dynamics, impulse and momentum.' },
-  { code: 'GET207', title: 'Engineering Mathematics I', level: 200, college: 'COE', units: 3, desc: 'Differential equations, matrix algebra, complex numbers, vector calculus.' },
-  { code: 'GET211', title: 'Engineering Drawing', level: 200, college: 'COE', units: 2, desc: 'CAD fundamentals, sectioning, dimensioning, assembly drawings.' },
-  { code: 'CPE211', title: 'Digital Logic Design', level: 200, college: 'COE', units: 3, desc: 'Boolean algebra, logic gates, flip-flops, counters, registers, Karnaugh maps.' },
-  { code: 'EEE211', title: 'Circuit Theory I', level: 200, college: 'COE', units: 3, desc: 'Kirchhoff’s laws, mesh & nodal analysis, network theorems, transient analysis.' },
-  { code: 'CHE211', title: 'Chemical Engineering Process', level: 200, college: 'COE', units: 3, desc: 'Material and energy balances, unit operations, stoichiometry applications.' },
-  { code: 'CVE211', title: 'Fluid Mechanics for Civil Eng.', level: 200, college: 'COE', units: 3, desc: 'Fluid statics, Bernoulli equation, open channel flow, pipe flow losses.' },
-  { code: 'MEE211', title: 'Engineering Materials', level: 200, college: 'COE', units: 3, desc: 'Crystal structures, mechanical testing, phase diagrams, heat treatments.' },
-  { code: 'CSC211', title: 'Data Structures & Algorithms', level: 200, college: 'CST', units: 3, desc: 'Arrays, linked lists, stacks, queues, trees, sorting, searching, time complexity.' },
-  { code: 'CSC221', title: 'Computer Organization & Assembly', level: 200, college: 'CST', units: 3, desc: 'Instruction sets, CPU architecture, memory hierarchy, assembly coding.' },
-  { code: 'BCH211', title: 'General Biochemistry I', level: 200, college: 'CST', units: 3, desc: 'Chemistry of biomolecules: proteins, carbohydrates, lipids, nucleic acids.' },
-  { code: 'MCB211', title: 'General Microbiology I', level: 200, college: 'CST', units: 3, desc: 'Bacterial morphology, staining techniques, microbial culture and control.' },
-  { code: 'BLD211', title: 'Building Construction Technology I', level: 200, college: 'CST', units: 3, desc: 'Foundations, walling materials, floor systems, site preparation.' },
-  { code: 'ESM211', title: 'Principles of Valuation', level: 200, college: 'CST', units: 3, desc: 'Property valuation methodologies, investment yield, compounding tables.' },
-  { code: 'ACC211', title: 'Financial Accounting I', level: 200, college: 'CMSS', units: 3, desc: 'Partnership accounts, company accounts, incomplete records, inventory valuation.' },
-  { code: 'ACC206', title: 'Accounting Software Lab', level: 200, college: 'CMSS', units: 2, desc: 'Practical implementation using SAGE, QuickBooks, Excel financial modeling.' },
-  { code: 'FIN209', title: 'Financial Systems & Markets', level: 200, college: 'CMSS', units: 3, desc: 'Money markets, capital markets, stock exchange operations, regulators.' },
-  { code: 'FIN215', title: 'Money and Banking', level: 200, college: 'CMSS', units: 3, desc: 'Central banking, monetary policy transmission, commercial banking operations.' },
-  { code: 'BUA216', title: 'Business Statistics', level: 200, college: 'CMSS', units: 3, desc: 'Probability distributions, hypothesis testing, ANOVA, correlation and regression.' },
-  { code: 'MKT211', title: 'Principles of Marketing', level: 200, college: 'CMSS', units: 3, desc: 'Marketing mix (4 Ps), consumer behavior, market segmentation, branding.' },
-  { code: 'ENG201', title: 'Introduction to Syntax', level: 200, college: 'CLDS', units: 3, desc: 'Sentence structure, phrase structure rules, transformational grammar.' },
-  { code: 'ENG205', title: 'Advanced English Composition', level: 200, college: 'CLDS', units: 2, desc: 'Argumentative writing, rhetoric, academic publication standards.' },
-  { code: 'POS211', title: 'Political Analysis', level: 200, college: 'CLDS', units: 3, desc: 'Empirical approaches to politics, comparative political models.' },
-  { code: 'GST211', title: 'Philosophy, Logic & Human Existence', level: 200, college: 'CORE', units: 2, desc: 'Socratic dialogue, logical fallacies, epistemology, ethical philosophy.' },
-  { code: 'GST222', title: 'Peace & Conflict Resolution', level: 200, college: 'CORE', units: 2, desc: 'Conflict dynamics, mediation, negotiation strategies, peacebuilding.' },
-  { code: 'TMC211', title: 'Total Man Concept III', level: 200, college: 'CORE', units: 1, desc: 'Emotional intelligence, health and wellness, personal responsibility.' },
-  { code: 'TMC221', title: 'Total Man Concept IV', level: 200, college: 'CORE', units: 1, desc: 'Purity, relationship ethics, career orientation, leadership skills.' },
-  { code: 'EDS211', title: 'Entrepreneurship Development III', level: 200, college: 'CORE', units: 1, desc: 'Business plan generation, financial projection models, pitch strategies.' },
-  { code: 'LDR211', title: 'Leadership Development II', level: 200, college: 'CLDS', units: 1, desc: 'Team dynamics, organizational influence, ethical decision making.' },
+    function EduTrackApp() {
+      const [level, setLevel] = useState('100');
+      const [tab, setTab] = useState('courses');
 
-  // 300 LEVEL
-  { code: 'CSC311', title: 'Operating Systems', level: 300, college: 'CST', units: 3, desc: 'Process scheduling, memory management, virtual memory, file systems, concurrency.' },
-  { code: 'CSC312', title: 'Database Management Systems', level: 300, college: 'CST', units: 3, desc: 'Relational algebra, SQL queries, normalization, ER diagrams, transaction ACID.' },
-  { code: 'CSC321', title: 'Software Engineering', level: 300, college: 'CST', units: 3, desc: 'Agile methodologies, SDLC, UML modeling, software testing and CI/CD.' },
-  { code: 'CPE311', title: 'Microprocessors & Embedded Design', level: 300, college: 'COE', units: 3, desc: '8086/ARM architecture, assembly programming, timers, interrupts, I/O interfacing.' },
-  { code: 'EEE311', title: 'Electromagnetic Fields', level: 300, college: 'COE', units: 3, desc: 'Maxwell’s equations, wave propagation, transmission line theory, wave guides.' },
-  { code: 'MEE311', title: 'Thermodynamics II', level: 300, college: 'COE', units: 3, desc: 'Rankine cycles, gas turbines, refrigeration cycles, psychrometrics.' },
-  { code: 'CVE311', title: 'Structural Analysis I', level: 300, college: 'COE', units: 3, desc: 'Indeterminate structures, moment distribution, slope deflection methods.' },
-  { code: 'PET311', title: 'Reservoir Engineering I', level: 300, college: 'COE', units: 3, desc: 'Rock and fluid properties, Darcy’s law, material balance equations.' },
-  { code: 'BCH311', title: 'Enzymology', level: 300, college: 'CST', units: 3, desc: 'Michaelis-Menten kinetics, enzyme inhibition, coenzymes, active site mapping.' },
-  { code: 'MCB311', title: 'Bacterial Physiology', level: 300, college: 'CST', units: 3, desc: 'Metabolic pathways, microbial respiration, transport mechanisms.' },
-  { code: 'PHY311', title: 'Quantum Mechanics I', level: 300, college: 'CST', units: 3, desc: 'Schrödinger equation, wavepackets, operators, harmonic oscillator.' },
-  { code: 'ACC311', title: 'Management Accounting', level: 300, college: 'CMSS', units: 3, desc: 'Marginal costing, CVP analysis, variance analysis, budgeting frameworks.' },
-  { code: 'ECN311', title: 'Intermediate Microeconomics', level: 300, college: 'CMSS', units: 3, desc: 'Utility maximization, consumer choice, game theory, general equilibrium.' },
-  { code: 'ECN321', title: 'Intermediate Macroeconomics', level: 300, college: 'CMSS', units: 3, desc: 'IS-LM model, AD-AS framework, economic growth models, inflation dynamics.' },
-  { code: 'IRL311', title: 'International Political System', level: 300, college: 'CMSS', units: 3, desc: 'Bipolarity, multipolarity, global power balance, international treaties.' },
-  { code: 'IRL313', title: 'Foreign Policy Analysis', level: 300, college: 'CMSS', units: 3, desc: 'Decision-making models in foreign affairs, national interest evaluation.' },
-  { code: 'IRL321', title: 'Diplomacy & Modern Practice', level: 300, college: 'CMSS', units: 3, desc: 'Protocol, negotiation, bilateral & multilateral diplomacy techniques.' },
-  { code: 'PSI317', title: 'Research Methodology', level: 300, college: 'CMSS', units: 3, desc: 'Research design, questionnaire construction, sampling, data analysis.' },
-  { code: 'POS311', title: 'History of Political Thought', level: 300, college: 'CLDS', units: 3, desc: 'Machiavelli, Hobbes, Locke, Rousseau, Marx political philosophy.' },
-  { code: 'PSY311', title: 'Research Methods in Psychology', level: 300, college: 'CLDS', units: 3, desc: 'Experimental design, psychometrics, survey methodologies.' },
-  { code: 'ENG311', title: 'Phonology of English', level: 300, college: 'CLDS', units: 3, desc: 'Phonemes, distinctive features, syllable structure, phonological rules.' },
-  { code: 'GST311', title: 'History & Philosophy of Science', level: 300, college: 'CORE', units: 2, desc: 'Scientific revolution, scientific method, technological impact on society.' },
-  { code: 'TMC311', title: 'Total Man Concept V', level: 300, college: 'CORE', units: 1, desc: 'Family life, financial discipline, personal wellness maintenance.' },
-  { code: 'TMC321', title: 'Total Man Concept VI', level: 300, college: 'CORE', units: 1, desc: 'Mentorship, societal influence, purpose fulfilment.' },
-  { code: 'EDS311', title: 'Entrepreneurship Development V', level: 300, college: 'CORE', units: 1, desc: 'Practical venture creation, product prototyping, market entry.' },
-  { code: 'EDS321', title: 'Entrepreneurship Development VI', level: 300, college: 'CORE', units: 1, desc: 'Scale-up strategies, venture capital, business sustainability.' },
+      const courses = {
+        '100': [
+          { code: 'GST111', title: 'Communication in English I', units: 2, college: 'Core' },
+          { code: 'GST121', title: 'Communication in English II', units: 2, college: 'Core' },
+          { code: 'GST122', title: 'Nigerian Peoples and Culture', units: 2, college: 'Core' },
+          { code: 'TMC111', title: 'Total Man Concept I', units: 1, college: 'Core' },
+          { code: 'EDS111', title: 'Entrepreneurship Dev Studies I', units: 1, college: 'Core' },
+          { code: 'MAT111', title: 'Algebra & Trigonometry', units: 3, college: 'CST' },
+          { code: 'PHY111', title: 'General Physics I', units: 3, college: 'CST' },
+          { code: 'CHM111', title: 'General Chemistry I', units: 3, college: 'CST' },
+          { code: 'ACC111', title: 'Principles of Accounting I', units: 3, college: 'CMSS' },
+          { code: 'ENG101', title: 'Survey of English Language', units: 3, college: 'CLDS' }
+        ],
+        '200': [
+          { code: 'GST211', title: 'Philosophy & Logic', units: 2, college: 'Core' },
+          { code: 'GST222', title: 'Peace Studies & Conflict Res.', units: 2, college: 'Core' },
+          { code: 'GET207', title: 'Engineering Mathematics I', units: 3, college: 'COE' },
+          { code: 'GET201', title: 'Applied Mechanics', units: 3, college: 'COE' },
+          { code: 'CSC211', title: 'Data Structures & Algorithms', units: 3, college: 'CST' },
+          { code: 'ACC211', title: 'Financial Accounting I', units: 3, college: 'CMSS' },
+          { code: 'EEE211', title: 'Circuit Theory I', units: 3, college: 'COE' }
+        ],
+        '300': [
+          { code: 'GST311', title: 'History & Phil. of Science', units: 2, college: 'Core' },
+          { code: 'CSC311', title: 'Operating Systems', units: 3, college: 'CST' },
+          { code: 'CSC312', title: 'Database Management Systems', units: 3, college: 'CST' },
+          { code: 'CPE311', title: 'Microprocessor Systems', units: 3, college: 'COE' },
+          { code: 'ACC311', title: 'Management Accounting', units: 3, college: 'CMSS' },
+          { code: 'PSI317', title: 'Research Methodology', units: 2, college: 'CMSS' }
+        ],
+        '400': [
+          { code: 'CSC411', title: 'Artificial Intelligence', units: 3, college: 'CST' },
+          { code: 'CSC421', title: 'Compiler Construction', units: 3, college: 'CST' },
+          { code: 'CSC499', title: 'Final Year Project', units: 6, college: 'CST' },
+          { code: 'ACC401', title: 'Advanced Financial Reporting', units: 3, college: 'CMSS' },
+          { code: 'GET499', title: 'SIWES Industrial Training', units: 6, college: 'COE' }
+        ],
+        '500': [
+          { code: 'CPE511', title: 'Advanced Computer Architecture', units: 3, college: 'COE' },
+          { code: 'CPE521', title: 'Embedded Robotics & Automation', units: 3, college: 'COE' },
+          { code: 'EEE511', title: 'Power Systems Engineering', units: 3, college: 'COE' },
+          { code: 'ENG599', title: 'Engineering Capstone Project', units: 6, college: 'COE' }
+        ]
+      };
 
-  // 400 LEVEL
-  { code: 'CSC411', title: 'Artificial Intelligence', level: 400, college: 'CST', units: 3, desc: 'Search algorithms, neural networks, machine learning, NLP, expert systems.' },
-  { code: 'CSC421', title: 'Compiler Construction', level: 400, college: 'CST', units: 3, desc: 'Lexical analysis, parsing, syntax trees, code generation, optimization.' },
-  { code: 'CSC499', title: 'Final Year Research Project', level: 400, college: 'CST', units: 6, desc: 'Independent empirical or software development research project & defence.' },
-  { code: 'CPE403', title: 'Data Communication & Networks', level: 400, college: 'COE', units: 3, desc: 'OSI 7-layer model, TCP/IP, routing algorithms, subnets, wireless protocols.' },
-  { code: 'CPE411', title: 'Hardware Design Techniques', level: 400, college: 'COE', units: 3, desc: 'VHDL/Verilog synthesis, FPGA implementation, timing verification.' },
-  { code: 'MEE406', title: 'Advanced Mechanics of Materials', level: 400, college: 'COE', units: 3, desc: 'Failure theories, thick cylinders, curved beams, fracture mechanics.' },
-  { code: 'BCH401', title: 'Advanced Enzymology', level: 400, college: 'CST', units: 3, desc: 'Allosteric regulation, enzyme engineering, industrial enzyme applications.' },
-  { code: 'BCJ402', title: 'Data Analysis in Communication', level: 400, college: 'CMSS', units: 3, desc: 'SPSS content analysis, audience measurement, statistical survey evaluation.' },
-  { code: 'ISM414', title: '3D Modelling & Digital Rendering', level: 400, college: 'CST', units: 3, desc: '3D geometry, texturing, ray tracing lighting, spatial rendering.' },
-  { code: 'ACC401', title: 'Advanced Financial Reporting', level: 400, college: 'CMSS', units: 3, desc: 'Group accounts, consolidation, IFRS standards, corporate restructurings.' },
-  { code: 'ECO403', title: 'Advanced Microeconomics', level: 400, college: 'CMSS', units: 3, desc: 'General equilibrium theory, welfare economics, information asymmetry.' },
-  { code: 'FIN409', title: 'Investment & Portfolio Mgmt', level: 400, college: 'CMSS', units: 3, desc: 'CAPM model, efficient frontier, bond valuation, portfolio rebalancing.' },
-  { code: 'IRL411', title: 'International Institutions', level: 400, college: 'CMSS', units: 3, desc: 'UN structure, IMF, World Bank, regional bodies (AU, ECOWAS).' },
-  { code: 'IRL414', title: 'Nigerian Foreign Policy', level: 400, college: 'CMSS', units: 3, desc: 'Africa as centerpiece, non-alignment, peacekeeping history, modern diplomacy.' },
-  { code: 'IRL421', title: 'Research Project', level: 400, college: 'CMSS', units: 6, desc: 'Supervised research dissertation and oral defence.' },
-  { code: 'STS411', title: 'Contemporary Strategic Studies', level: 400, college: 'CMSS', units: 3, desc: 'Nuclear deterrence, cyber warfare, counter-terrorism strategies.' },
-  { code: 'PSY404', title: 'Advanced Clinical Psychology', level: 400, college: 'CLDS', units: 3, desc: 'Psychotherapy techniques, DSM classification, diagnostic assessment.' },
-  { code: 'POS411', title: 'Public Administration in Nigeria', level: 400, college: 'CLDS', units: 3, desc: 'Civil service structure, administrative reforms, bureaucratic accountability.' },
-  { code: 'ENG411', title: 'Semantics of English', level: 400, college: 'CLDS', units: 3, desc: 'Lexical relations, truth-conditional semantics, pragmatic meaning.' },
-  { code: 'TMC411', title: 'Total Man Concept VII', level: 400, college: 'CORE', units: 1, desc: 'Life transitions, career readiness, community service.' },
-  { code: 'TMC421', title: 'Total Man Concept VIII', level: 400, college: 'CORE', units: 1, desc: 'Excellence in post-university spheres, nation-building ethics.' },
-  { code: 'EDS411', title: 'Entrepreneurship VII', level: 400, college: 'CORE', units: 1, desc: 'Investor pitching, business registration, commercialization.' },
-  { code: 'EDS421', title: 'Entrepreneurship VIII', level: 400, college: 'CORE', units: 1, desc: 'Venture launch, intellectual property rights, exit strategies.' },
-  { code: 'GET499', title: 'SIWES Industrial Training', level: 400, college: 'COE', units: 6, desc: '6-month industrial internship placement, logbook reporting & presentation.' },
-
-  // 500 LEVEL
-  { code: 'CPE511', title: 'Advanced Computer Architecture', level: 500, college: 'COE', units: 3, desc: 'Pipelining, vector processors, multicore synchronization, cache coherence.' },
-  { code: 'CPE521', title: 'Embedded Robotics & Automation', level: 500, college: 'COE', units: 3, desc: 'Robot kinematics, sensors, actuators, ROS, autonomous control loops.' },
-  { code: 'EEE511', title: 'Power Systems Engineering', level: 500, college: 'COE', units: 3, desc: 'Power flow analysis, fault calculation, grid protection, high voltage.' },
-  { code: 'MEE511', title: 'Machine Design II & CAD/CAM', level: 500, college: 'COE', units: 3, desc: 'Gears, shafts, bearings design, CNC programming, CAD/CAM integration.' },
-  { code: 'CVE511', title: 'Geotechnical Engineering II', level: 500, college: 'COE', units: 3, desc: 'Slope stability, shallow & deep foundation design, retaining walls.' },
-  { code: 'CHE511', title: 'Chemical Plant Design & Economics', level: 500, college: 'COE', units: 3, desc: 'Equipment sizing, cost estimation, safety HAZOP, process flowsheets.' },
-  { code: 'PET511', title: 'Enhanced Oil Recovery', level: 500, college: 'COE', units: 3, desc: 'Thermal recovery, polymer flooding, gas injection methods, EOR screening.' },
-  { code: 'ENG599', title: 'Engineering Capstone Design Project', level: 500, college: 'COE', units: 6, desc: 'Major year-long group/individual engineering design project & panel defence.' },
-  { code: 'BUD521', title: 'Advanced Construction Tech I', level: 500, college: 'CST', units: 3, desc: 'Pre-stressed concrete, multi-story structural systems, heavy foundation methods.' },
-  { code: 'BUD522', title: 'Advanced Construction Tech II', level: 500, college: 'CST', units: 3, desc: 'Industrialized building techniques, green building certifications.' },
-  { code: 'ARC511', title: 'Architectural Design Studio IX', level: 500, college: 'CST', units: 6, desc: 'Complex urban masterplanning and multi-functional architectural studio.' },
-  { code: 'ARC521', title: 'Professional Practice & Ethics', level: 500, college: 'CST', units: 3, desc: 'ARCON codes, building contracts, arbitration, project management.' }
-];
-
-const LEVEL_TIMETABLES = {
-  100: [
-    { day: 'Monday', morning: 'MAT111 / MAT121', afternoon: 'GST111 / GST121', evening: 'Problem set practice: MAT111' },
-    { day: 'Tuesday', morning: 'PHY111 / PHY121', afternoon: 'TMC111 / TMC121', evening: 'Physics Formula Recap' },
-    { day: 'Wednesday', morning: 'CHM111 / CHM121', afternoon: 'EDS111 / EDS121', evening: 'CSC111 Lab Code Practice' },
-    { day: 'Thursday', morning: 'ACC111 / ECN111 / POS111', afternoon: 'LDR111 / GST122', evening: 'Flashcard review: Nigerian Culture' },
-    { day: 'Friday', morning: 'ENG101 / PSY111 / CPE112', afternoon: 'General Revision Slot', evening: 'EduTrack Sprint Test' },
-  ],
-  200: [
-    { day: 'Monday', morning: 'GET207 / CSC211', afternoon: 'GST211 (Philosophy)', evening: 'Data Structures & Matrix practice' },
-    { day: 'Tuesday', morning: 'GET201 / ACC211', afternoon: 'TMC211 / TMC221', evening: 'Biochemistry / Mechanics quiz' },
-    { day: 'Wednesday', morning: 'EEE211 / CHE211 / CVE211', afternoon: 'EDS211 (Entrepreneurship)', evening: 'Circuit analysis problems' },
-    { day: 'Thursday', morning: 'CPE211 / FIN209 / ENG201', afternoon: 'GST222 (Peace Studies)', evening: 'Digital logic simplification' },
-    { day: 'Friday', morning: 'MKT211 / ESM211 / POS211', afternoon: 'Lab & Departmental Groups', evening: 'EduTrack Weekly XP Challenge' },
-  ],
-  300: [
-    { day: 'Monday', morning: 'CSC311 / EEE311 / ACC311', afternoon: 'GST311 (Hist. of Science)', evening: 'OS Scheduling & Circuit review' },
-    { day: 'Tuesday', morning: 'CPE311 / ECN311 / CVE311', afternoon: 'TMC311 / TMC321', evening: 'Microprocessor assembly practice' },
-    { day: 'Wednesday', morning: 'CSC312 / MEE311 / IRL311', afternoon: 'EDS311 / EDS321', evening: 'SQL Database schema queries' },
-    { day: 'Thursday', morning: 'BCH311 / PHY311 / POS311', afternoon: 'PSI317 (Research Methods)', evening: 'Research methodology notes' },
-    { day: 'Friday', morning: 'PET311 / ENG311 / Electives', afternoon: 'Group Seminars', evening: 'Cram Sheet Review' },
-  ],
-  400: [
-    { day: 'Monday', morning: 'CSC411 (AI) / ACC401', afternoon: 'TMC411 / TMC421', evening: 'AI Search algorithms & Literature review' },
-    { day: 'Tuesday', morning: 'CPE403 / ECO403 / PSY404', afternoon: 'CSC499 / IRL421 Research', evening: 'Data collection & paper writing' },
-    { day: 'Wednesday', morning: 'CSC421 / FIN409 / STS411', afternoon: 'EDS411 / EDS421', evening: 'Compiler syntax trees practice' },
-    { day: 'Thursday', morning: 'IRL411 / POS411 / ENG411', afternoon: 'GET499 SIWES Logbooks', evening: 'Thesis chapter proofreading' },
-    { day: 'Friday', morning: 'CPE411 / MEE406 / BCJ402', afternoon: 'Project Advisor Consultation', evening: 'EduTrack Practice Sprint' },
-  ],
-  500: [
-    { day: 'Monday', morning: 'CPE511 / EEE511 / BUD521', afternoon: 'ENG599 / ARC511 Design Studio', evening: 'Architecture & System simulation' },
-    { day: 'Tuesday', morning: 'MEE511 / CHE511 / PET511', afternoon: 'Capstone Lab Experiments', evening: 'CAD/CAM drafting & Plant flowsheet' },
-    { day: 'Wednesday', morning: 'CVE511 / BUD522 / ARC521', afternoon: 'Engineering Project Calculations', evening: 'Structural design verification' },
-    { day: 'Thursday', morning: 'CPE521 (Robotics) / Special', afternoon: 'Capstone Presentation Prep', evening: 'Technical report documentation' },
-    { day: 'Friday', morning: 'Final Year Seminars', afternoon: 'Departmental Reviews', evening: 'Master Exam Readiness Review' },
-  ]
-};
-
-const MOCK_QUIZ_QUESTIONS = {
-  'CSC211': [
-    { q: 'What is the worst-case time complexity of Quick Sort?', options: ['O(n log n)', 'O(n²)', 'O(n)', 'O(1)'], correct: 1 },
-    { q: 'Which data structure follows the LIFO (Last In First Out) principle?', options: ['Queue', 'Stack', 'Tree', 'Graph'], correct: 1 },
-    { q: 'Which of the following is NOT a balanced binary search tree?', options: ['AVL Tree', 'Red-Black Tree', 'Splay Tree', 'Simple BST'], correct: 3 }
-  ],
-  'MAT111': [
-    { q: 'What is the value of log₁₀(1000)?', options: ['1', '2', '3', '10'], correct: 2 },
-    { q: 'What are the roots of x² - 5x + 6 = 0?', options: ['2 and 3', '-2 and -3', '1 and 6', '-1 and -6'], correct: 0 },
-    { q: 'What is sin²(θ) + cos²(θ) equal to?', options: ['0', '1', '2', 'tan(θ)'], correct: 1 }
-  ],
-  'DEFAULT': [
-    { q: 'What is the standard pass mark for Covenant University degree courses?', options: ['40%', '45%', '50%', '60%'], correct: 1 },
-    { q: 'How many credits constitute a typical full semester load?', options: ['12-15', '18-24', '25-30', '10-12'], correct: 1 },
-    { q: 'What does TMC stand for in Covenant University core studies?', options: ['Total Man Concept', 'Technology Management Class', 'Total Method Control', 'Technical Module Course'], correct: 0 }
-  ]
-};
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('courses');
-  const [selectedLevelFilter, setSelectedLevelFilter] = useState(100);
-  const [selectedCollegeFilter, setSelectedCollegeFilter] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // User Gamification State
-  const [xp, setXp] = useState(1450);
-  const [streak, setStreak] = useState(5);
-  const [streakClaimed, setStreakClaimed] = useState(false);
-  
-  // Creator Note Modal State
-  const [creatorName, setCreatorName] = useState('Victor Covenant Scholar');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [feedbackText, setFeedbackText] = useState('');
-  const [feedbackSent, setFeedbackSent] = useState(false);
-
-  // Pomodoro Timer State
-  const [timerSeconds, setTimerSeconds] = useState(25 * 60);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [audioMode, setAudioMode] = useState('lofi'); // 'off', 'lofi', 'rain'
-  const audioContextRef = useRef(null);
-
-  // Quiz Arena State
-  const [selectedQuizCourse, setSelectedQuizCourse] = useState('CSC211');
-  const [quizIndex, setQuizIndex] = useState(0);
-  const [quizScore, setQuizScore] = useState(0);
-  const [quizSelectedOption, setQuizSelectedOption] = useState(null);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-
-  // Cram Sheet Modal State
-  const [activeCramCourse, setActiveCramCourse] = useState(null);
-
-  // CGPA Calculator State
-  const [coursesList, setCoursesList] = useState([
-    { code: 'MAT111', units: 3, grade: 'A' },
-    { code: 'PHY111', units: 3, grade: 'B' },
-    { code: 'GST111', units: 2, grade: 'A' },
-    { code: 'TMC111', units: 1, grade: 'A' }
-  ]);
-
-  useEffect(() => {
-    let interval = null;
-    if (isTimerRunning && timerSeconds > 0) {
-      interval = setInterval(() => setTimerSeconds(prev => prev - 1), 1000);
-    } else if (timerSeconds === 0) {
-      setIsTimerRunning(false);
-      alert('🎉 Pomodoro Session Complete! +50 XP Earned');
-      setXp(prev => prev + 50);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning, timerSeconds]);
-
-  // Handle Audio Synthesis for Lofi/Rain
-  const toggleAudio = (mode) => {
-    setAudioMode(mode);
-    if (mode === 'off') return;
-    
-    // Play synthetic ambient sound using Web Audio API
-    try {
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      const ctx = audioContextRef.current;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.type = mode === 'lofi' ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(mode === 'lofi' ? 220 : 110, ctx.currentTime);
-      gain.gain.setValueAtTime(0.02, ctx.currentTime);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 3);
-    } catch (e) {
-      console.log('Audio Context Error:', e);
-    }
-  };
-
-  const handleClaimStreak = () => {
-    if (!streakClaimed) {
-      setStreak(prev => prev + 1);
-      setXp(prev => prev + 150);
-      setStreakClaimed(true);
-    }
-  };
-
-  const handleQuizAnswer = (optionIdx) => {
-    setQuizSelectedOption(optionIdx);
-    const questions = MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT'];
-    if (optionIdx === questions[quizIndex].correct) {
-      setQuizScore(prev => prev + 1);
-    }
-  };
-
-  const handleNextQuizQuestion = () => {
-    const questions = MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT'];
-    if (quizIndex < questions.length - 1) {
-      setQuizIndex(prev => prev + 1);
-      setQuizSelectedOption(null);
-    } else {
-      setQuizCompleted(true);
-      setXp(prev => prev + 100);
-    }
-  };
-
-  // Calculate CGPA
-  const calculateCGPA = () => {
-    const gradePoints = { A: 5, B: 4, C: 3, D: 2, E: 1, F: 0 };
-    let totalUnits = 0;
-    let totalPoints = 0;
-    coursesList.forEach(c => {
-      const u = parseInt(c.units) || 0;
-      const p = gradePoints[c.grade] || 0;
-      totalUnits += u;
-      totalPoints += u * p;
-    });
-    return totalUnits > 0 ? (totalPoints / totalUnits).toFixed(2) : '0.00';
-  };
-
-  // Filter Courses
-  const filteredCourses = COURSE_DIRECTORY.filter(course => {
-    const matchesLevel = selectedLevelFilter === 'ALL' || course.level === parseInt(selectedLevelFilter);
-    const matchesCollege = selectedCollegeFilter === 'ALL' || course.college === selectedCollegeFilter;
-    const matchesSearch = course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          course.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesLevel && matchesCollege && matchesSearch;
-  });
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans pb-12">
-      
-      {}
-      <div className="bg-gradient-to-r from-violet-900 via-purple-800 to-indigo-900 text-white px-4 py-3 shadow-lg border-b border-purple-500/30">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
-          <div className="flex items-center space-x-2 text-sm md:text-base font-medium">
-            <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
-            <span>Designed & Built by <strong className="text-amber-300 underline underline-offset-4 decoration-amber-400">{creatorName}</strong> | Built for Covenant University Students</span>
-          </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center space-x-1.5 text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full border border-white/20 transition-all font-semibold"
-          >
-            <Edit3 className="w-3.5 h-3.5 text-amber-300" />
-            <span>Edit Creator Note & Feedback</span>
-          </button>
-        </div>
-      </div>
-
-      {}
-      <div className="bg-slate-800/80 border-b border-slate-700/60 backdrop-blur-md sticky top-0 z-30 px-4 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          
-          <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-                EduTrack AI <span className="text-amber-400 text-xs font-semibold px-2 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 ml-2">CU Edition</span>
-              </h1>
-              <p className="text-xs text-slate-400">Master Level-by-Level Academic Excellence at Covenant University</p>
-            </div>
+      return (
+        <div className="max-w-4xl mx-auto p-4 md:p-6">
+          {/* Header */}
+          <div className="bg-slate-800 border border-amber-500/30 rounded-2xl p-6 mb-6 text-center shadow-lg">
+            <h1 className="text-3xl font-extrabold text-amber-400 mb-1">EduTrack AI</h1>
+            <p className="text-slate-300 text-sm">Built for Covenant University Students | Designed by David Kayode</p>
           </div>
 
-          {/* Engagement Hooks Bar */}
-          <div className="flex items-center space-x-3 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-            {/* Daily Streak */}
-            <button 
-              onClick={handleClaimStreak}
-              disabled={streakClaimed}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-xl border text-sm transition-all ${
-                streakClaimed 
-                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' 
-                  : 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/40 text-amber-300 hover:scale-105 animate-pulse'
-              }`}
-            >
-              <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
-              <span className="font-bold">{streak} Day Streak</span>
-              {!streakClaimed && <span className="text-xs bg-amber-400 text-slate-900 px-1.5 py-0.5 rounded font-black">+150 XP</span>}
-            </button>
-
-            {/* Total XP Score */}
-            <div className="flex items-center space-x-2 bg-purple-500/10 border border-purple-500/30 text-purple-300 px-3 py-2 rounded-xl text-sm">
-              <Award className="w-5 h-5 text-purple-400" />
-              <span className="font-bold">{xp} XP</span>
-            </div>
-
-            {/* Exam Readiness Score */}
-            <div className="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 px-3 py-2 rounded-xl text-sm">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <span className="font-bold">Readiness: 88%</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {}
-      <div className="max-w-7xl mx-auto px-4 mt-6">
-        
-        {/* Navigation Tabs */}
-        <div className="flex items-center space-x-2 border-b border-slate-700/80 overflow-x-auto pb-2">
-          {[
-            { id: 'courses', label: '100L - 500L Courses Directory', icon: Layers },
-            { id: 'timetable', label: 'Level-by-Level Timetable', icon: Calendar },
-            { id: 'quiz', label: 'AI Practice Quiz Arena', icon: Sparkles },
-            { id: 'pomodoro', label: 'Focus Studio & Audio', icon: Clock },
-            { id: 'cgpa', label: 'CGPA & Target Predictor', icon: Target },
-            { id: 'leaderboard', label: 'Campus Leaderboard', icon: TrendingUp }
-          ].map(tab => {
-            const Icon = tab.icon;
-            return (
+          {/* Level Tabs */}
+          <div className="flex justify-center space-x-2 mb-6">
+            {['100', '200', '300', '400', '500'].map(lvl => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2.5 rounded-t-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-slate-800 text-amber-400 border-t-2 border-amber-400 shadow-md'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                key={lvl}
+                onClick={() => setLevel(lvl)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  level === lvl 
+                    ? 'bg-amber-400 text-slate-900 shadow-lg scale-105' 
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                {lvl} Level
               </button>
-            );
-          })}
-        </div>
+            ))}
+          </div>
 
-        {/* TAB 1: Complete Level-by-Level Course Directory */}
-        {activeTab === 'courses' && (
-          <div className="mt-6 space-y-6">
-            
-            {/* Filter Header */}
-            <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
-              
-              {/* Level Selector Buttons */}
-              <div className="flex items-center space-x-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider mr-2">Level:</span>
-                {[100, 200, 300, 400, 500].map(lvl => (
-                  <button
-                    key={lvl}
-                    onClick={() => setSelectedLevelFilter(lvl)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      selectedLevelFilter === lvl
-                        ? 'bg-amber-400 text-slate-900 shadow-md scale-105'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    {lvl} Level
+          {/* Course List Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {courses[level].map((item, idx) => (
+              <div key={idx} className="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="bg-amber-400/10 text-amber-400 font-mono font-bold px-2 py-1 rounded text-xs">
+                    {item.code}
+                  </span>
+                  <span className="text-xs text-slate-400">{item.units} Units • {item.college}</span>
+                </div>
+                <h3 className="font-semibold text-white text-base mb-3">{item.title}</h3>
+                <div className="flex space-x-2">
+                  <button onClick={() => alert(`Generated Cram Sheet for ${item.code}`)} className="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs px-3 py-1.5 rounded-lg">
+                    📄 Cram Sheet
                   </button>
-                ))}
-              </div>
-
-              {/* College Filter Dropdown */}
-              <div className="flex items-center space-x-3 w-full md:w-auto">
-                <select
-                  value={selectedCollegeFilter}
-                  onChange={(e) => setSelectedCollegeFilter(e.target.value)}
-                  className="bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-amber-400"
-                >
-                  <option value="ALL">All Colleges & Cores</option>
-                  <option value="COE">COE (Engineering)</option>
-                  <option value="CST">CST (Science & Tech)</option>
-                  <option value="CMSS">CMSS (Management/Social)</option>
-                  <option value="CLDS">CLDS (Leadership)</option>
-                  <option value="CORE">University Core (GST/TMC/EDS)</option>
-                </select>
-
-                {/* Search Bar */}
-                <div className="relative flex-1 md:w-64">
-                  <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search MAT111, CSC211..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-900 text-xs text-slate-200 pl-9 pr-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-amber-400"
-                  />
-                </div>
-              </div>
-
-            </div>
-
-            {/* Courses Display Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCourses.map((course, idx) => (
-                <div 
-                  key={idx}
-                  className="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 hover:border-indigo-500/50 transition-all shadow-md flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-black px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                        {course.code}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300 font-medium">
-                          {course.level}L
-                        </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-amber-400/10 text-amber-300 border border-amber-400/20 font-bold">
-                          {course.units} Units
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-base font-bold text-slate-100 group-hover:text-amber-400 transition-colors">
-                      {course.title}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-2 line-clamp-2">
-                      {course.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-semibold uppercase tracking-wider">{course.college}</span>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => setActiveCramCourse(course)}
-                        className="flex items-center space-x-1 text-xs bg-slate-700 hover:bg-slate-600 text-amber-300 px-2.5 py-1 rounded-lg transition-colors font-medium"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Cram Sheet</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedQuizCourse(course.code);
-                          setActiveTab('quiz');
-                        }}
-                        className="flex items-center space-x-1 text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg transition-colors font-medium"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Quiz</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {filteredCourses.length === 0 && (
-              <div className="text-center py-12 bg-slate-800 rounded-2xl border border-slate-700">
-                <HelpCircle className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-                <p className="text-slate-300 font-medium">No courses found matching your filter criteria.</p>
-                <p className="text-xs text-slate-500 mt-1">Try switching academic levels or clearing search keywords.</p>
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'timetable' && (
-          <div className="mt-6 space-y-6">
-            
-            {/* Level Selector Tabs */}
-            <div className="flex items-center space-x-2 bg-slate-800 p-2 rounded-2xl border border-slate-700">
-              <span className="text-xs font-bold text-slate-400 px-3 uppercase tracking-wider">Select Academic Level Schedule:</span>
-              {[100, 200, 300, 400, 500].map(lvl => (
-                <button
-                  key={lvl}
-                  onClick={() => setSelectedLevelFilter(lvl)}
-                  className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
-                    selectedLevelFilter === lvl
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 shadow-md'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
-                  }`}
-                >
-                  {lvl} Level Timetable
-                </button>
-              ))}
-            </div>
-
-            {/* Timetable Table */}
-            <div className="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
-              <div className="p-4 bg-slate-800/90 border-b border-slate-700 flex justify-between items-center">
-                <h2 className="text-base font-bold text-amber-400 flex items-center space-x-2">
-                  <Calendar className="w-5 h-5 text-amber-400" />
-                  <span>{selectedLevelFilter} Level Master Weekly Study Timetable</span>
-                </h2>
-                <span className="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full font-semibold">
-                  Covenant University Standard Hours
-                </span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-900/60 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-700">
-                    <tr>
-                      <th className="px-4 py-3">Day</th>
-                      <th className="px-4 py-3">Morning Slot (8 AM - 11 AM)</th>
-                      <th className="px-4 py-3">Afternoon Slot (2 PM - 5 PM)</th>
-                      <th className="px-4 py-3">Evening Practice (7 PM - 9 PM)</th>
-                      <th className="px-4 py-3 text-right">Quick AI Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-700/60">
-                    {(LEVEL_TIMETABLES[selectedLevelFilter] || LEVEL_TIMETABLES[100]).map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-700/30 transition-colors">
-                        <td className="px-4 py-3 font-bold text-slate-200">{row.day}</td>
-                        <td className="px-4 py-3 text-indigo-300 font-medium">{row.morning}</td>
-                        <td className="px-4 py-3 text-purple-300 font-medium">{row.afternoon}</td>
-                        <td className="px-4 py-3 text-emerald-300 font-medium">{row.evening}</td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => {
-                              setActiveTab('quiz');
-                            }}
-                            className="text-xs bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 px-2.5 py-1 rounded-lg border border-amber-400/30 transition-colors font-semibold"
-                          >
-                            Launch Quiz Slot
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'quiz' && (
-          <div className="mt-6 max-w-3xl mx-auto bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-slate-700 mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-amber-400 flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
-                  <span>AI Practice Quiz Arena</span>
-                </h2>
-                <p className="text-xs text-slate-400">Testing active recall for Covenant University course modules</p>
-              </div>
-
-              {/* Course Selector for Quiz */}
-              <select
-                value={selectedQuizCourse}
-                onChange={(e) => {
-                  setSelectedQuizCourse(e.target.value);
-                  setQuizIndex(0);
-                  setQuizScore(0);
-                  setQuizSelectedOption(null);
-                  setQuizCompleted(false);
-                }}
-                className="bg-slate-900 text-xs text-amber-300 font-bold px-3 py-2 rounded-xl border border-slate-700 focus:outline-none"
-              >
-                <option value="CSC211">CSC211 - Data Structures</option>
-                <option value="MAT111">MAT111 - Algebra & Trig</option>
-                <option value="DEFAULT">CU Core & General Practice</option>
-              </select>
-            </div>
-
-            {!quizCompleted ? (
-              <div>
-                {/* Question Progress */}
-                <div className="flex justify-between items-center text-xs text-slate-400 mb-2">
-                  <span>Question {quizIndex + 1} of {(MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT']).length}</span>
-                  <span className="font-bold text-amber-400">Score: {quizScore}</span>
-                </div>
-
-                {/* Question Box */}
-                <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-700/80 mb-6">
-                  <h3 className="text-base font-bold text-slate-100">
-                    {(MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT'])[quizIndex].q}
-                  </h3>
-                </div>
-
-                {/* Options List */}
-                <div className="space-y-3 mb-6">
-                  {(MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT'])[quizIndex].options.map((option, oIdx) => {
-                    const isSelected = quizSelectedOption === oIdx;
-                    const isCorrect = oIdx === (MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT'])[quizIndex].correct;
-                    
-                    let buttonStyle = 'bg-slate-700/50 hover:bg-slate-700 border-slate-600 text-slate-200';
-                    if (quizSelectedOption !== null) {
-                      if (isCorrect) buttonStyle = 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold';
-                      else if (isSelected) buttonStyle = 'bg-rose-500/20 border-rose-500 text-rose-300 font-bold';
-                    }
-
-                    return (
-                      <button
-                        key={oIdx}
-                        disabled={quizSelectedOption !== null}
-                        onClick={() => handleQuizAnswer(oIdx)}
-                        className={`w-full text-left p-4 rounded-xl border text-xs md:text-sm transition-all flex items-center justify-between ${buttonStyle}`}
-                      >
-                        <span>{option}</span>
-                        {quizSelectedOption !== null && isCorrect && <CheckCircle className="w-5 h-5 text-emerald-400" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Next Button */}
-                {quizSelectedOption !== null && (
-                  <button
-                    onClick={handleNextQuizQuestion}
-                    className="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 font-bold py-3 rounded-xl hover:opacity-90 transition-all flex items-center justify-center space-x-2"
-                  >
-                    <span>Next Question</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 bg-amber-400/20 border border-amber-400/40 rounded-full flex items-center justify-center mx-auto text-amber-400">
-                  <Award className="w-8 h-8" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-100">Quiz Completed!</h3>
-                <p className="text-sm text-slate-300">
-                  You scored <strong className="text-amber-400">{quizScore}</strong> out of {(MOCK_QUIZ_QUESTIONS[selectedQuizCourse] || MOCK_QUIZ_QUESTIONS['DEFAULT']).length} on <strong className="text-indigo-300">{selectedQuizCourse}</strong>
-                </p>
-                <p className="text-xs text-emerald-400 font-bold">+100 XP added to your Covenant Scholar profile!</p>
-
-                <button
-                  onClick={() => {
-                    setQuizIndex(0);
-                    setQuizScore(0);
-                    setQuizSelectedOption(null);
-                    setQuizCompleted(false);
-                  }}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all inline-flex items-center space-x-2 mt-4"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Retake Quiz</span>
-                </button>
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'pomodoro' && (
-          <div className="mt-6 max-w-xl mx-auto bg-slate-800 rounded-2xl border border-slate-700 p-6 text-center shadow-xl space-y-6">
-            
-            <div>
-              <h2 className="text-xl font-bold text-amber-400 flex items-center justify-center space-x-2">
-                <Clock className="w-6 h-6 text-amber-400" />
-                <span>Covenant Focus Studio</span>
-              </h2>
-              <p className="text-xs text-slate-400 mt-1">Deep Work Timer & Simulated Ambient Audio</p>
-            </div>
-
-            {/* Timer Visual Display */}
-            <div className="bg-slate-900/90 py-8 px-6 rounded-3xl border border-slate-700/80 max-w-xs mx-auto">
-              <span className="text-5xl font-black tracking-widest text-slate-100 font-mono">
-                {String(Math.floor(timerSeconds / 60)).padStart(2, '0')}:
-                {String(timerSeconds % 60).padStart(2, '0')}
-              </span>
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center justify-center space-x-4">
-              <button
-                onClick={() => setIsTimerRunning(!isTimerRunning)}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-bold text-xs transition-all shadow-md ${
-                  isTimerRunning
-                    ? 'bg-rose-500 hover:bg-rose-600 text-white'
-                    : 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                }`}
-              >
-                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                <span>{isTimerRunning ? 'Pause Session' : 'Start Focus'}</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsTimerRunning(false);
-                  setTimerSeconds(25 * 60);
-                }}
-                className="p-3 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-xs transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Ambient Sound Mode Toggle */}
-            <div className="pt-4 border-t border-slate-700/80">
-              <span className="text-xs font-bold text-slate-400 block mb-3 uppercase tracking-wider">
-                Focus Audio Simulator:
-              </span>
-              <div className="flex justify-center space-x-2">
-                {[
-                  { id: 'off', label: 'Mute', icon: VolumeX },
-                  { id: 'lofi', label: 'Alpha Lofi Beat', icon: Volume2 },
-                  { id: 'rain', label: 'Rain Meditation', icon: Volume2 }
-                ].map(snd => {
-                  const Icon = snd.icon;
-                  return (
-                    <button
-                      key={snd.id}
-                      onClick={() => toggleAudio(snd.id)}
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        audioMode === snd.id
-                          ? 'bg-amber-400 text-slate-900 shadow-md'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{snd.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'cgpa' && (
-          <div className="mt-6 max-w-2xl mx-auto bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl space-y-6">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-slate-700">
-              <div>
-                <h2 className="text-xl font-bold text-amber-400 flex items-center space-x-2">
-                  <Target className="w-6 h-6 text-amber-400" />
-                  <span>CGPA Target Predictor</span>
-                </h2>
-                <p className="text-xs text-slate-400">Calculate target grades required for Covenant First Class (4.50+)</p>
-              </div>
-
-              {/* CGPA Display Badge */}
-              <div className="bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 px-4 py-2 rounded-xl text-center shadow-md">
-                <span className="text-2xl font-black block leading-none">{calculateCGPA()}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider">Predicted GPA</span>
-              </div>
-            </div>
-
-            {/* Course Grade Table */}
-            <div className="space-y-3">
-              {coursesList.map((item, idx) => (
-                <div key={idx} className="flex items-center space-x-3 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
-                  <input
-                    type="text"
-                    value={item.code}
-                    onChange={(e) => {
-                      const updated = [...coursesList];
-                      updated[idx].code = e.target.value;
-                      setCoursesList(updated);
-                    }}
-                    placeholder="Course Code"
-                    className="w-1/3 bg-slate-800 text-xs text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 focus:outline-none"
-                  />
-
-                  <select
-                    value={item.units}
-                    onChange={(e) => {
-                      const updated = [...coursesList];
-                      updated[idx].units = parseInt(e.target.value);
-                      setCoursesList(updated);
-                    }}
-                    className="w-1/4 bg-slate-800 text-xs text-slate-200 px-2 py-1.5 rounded-lg border border-slate-700 focus:outline-none"
-                  >
-                    {[1, 2, 3, 4, 5, 6].map(u => <option key={u} value={u}>{u} Units</option>)}
-                  </select>
-
-                  <select
-                    value={item.grade}
-                    onChange={(e) => {
-                      const updated = [...coursesList];
-                      updated[idx].grade = e.target.value;
-                      setCoursesList(updated);
-                    }}
-                    className="w-1/4 bg-slate-800 text-xs text-amber-300 font-bold px-2 py-1.5 rounded-lg border border-slate-700 focus:outline-none"
-                  >
-                    {['A', 'B', 'C', 'D', 'E', 'F'].map(g => <option key={g} value={g}>Grade {g}</option>)}
-                  </select>
-
-                  <button
-                    onClick={() => setCoursesList(coursesList.filter((_, i) => i !== idx))}
-                    className="text-rose-400 hover:text-rose-300 p-1"
-                  >
-                    <X className="w-4 h-4" />
+                  <button onClick={() => alert(`Starting Quiz for ${item.code}`)} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1.5 rounded-lg">
+                    ✨ Quiz
                   </button>
                 </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setCoursesList([...coursesList, { code: 'NEW101', units: 3, grade: 'A' }])}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-2.5 rounded-xl text-xs transition-colors"
-            >
-              + Add Another Course Module
-            </button>
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'leaderboard' && (
-          <div className="mt-6 max-w-2xl mx-auto bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-xl space-y-6">
-            
-            <div className="flex items-center justify-between pb-4 border-b border-slate-700">
-              <div>
-                <h2 className="text-xl font-bold text-amber-400 flex items-center space-x-2">
-                  <TrendingUp className="w-6 h-6 text-amber-400" />
-                  <span>Campus Top Scholars Leaderboard</span>
-                </h2>
-                <p className="text-xs text-slate-400">Anonymous live XP rankings across Covenant University colleges</p>
               </div>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                { rank: 1, name: 'Anonymous Eagle #1042', college: 'COE 400L', xp: 3420, streak: 14 },
-                { rank: 2, name: creatorName + ' (You)', college: 'CST 300L', xp: xp, streak: streak, isYou: true },
-                { rank: 3, name: 'CU Alpha Scholar #881', college: 'CMSS 200L', xp: 1210, streak: 4 },
-                { rank: 4, name: 'Covenant Pioneer #502', college: 'CLDS 100L', xp: 980, streak: 3 },
-              ].map((item) => (
-                <div
-                  key={item.rank}
-                  className={`flex items-center justify-between p-4 rounded-xl border text-xs md:text-sm transition-all ${
-                    item.isYou
-                      ? 'bg-amber-400/10 border-amber-400/40 text-slate-100 font-bold'
-                      : 'bg-slate-900/60 border-slate-700/80 text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs ${
-                      item.rank === 1 ? 'bg-amber-400 text-slate-900' :
-                      item.rank === 2 ? 'bg-slate-300 text-slate-900' :
-                      'bg-slate-700 text-slate-300'
-                    }`}>
-                      #{item.rank}
-                    </span>
-                    <div>
-                      <span className="block font-bold">{item.name}</span>
-                      <span className="text-[10px] text-slate-400">{item.college}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <span className="text-amber-400 font-bold">{item.xp} XP</span>
-                    <span className="text-xs text-slate-400 flex items-center space-x-1">
-                      <Flame className="w-3.5 h-3.5 text-amber-400" />
-                      <span>{item.streak}d</span>
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        )}
-
-      </div>
-
-      {}
-      {activeCramCourse && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-3xl border border-slate-700 max-w-xl w-full p-6 shadow-2xl space-y-4">
-            
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3">
-              <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-amber-400" />
-                <h3 className="font-bold text-slate-100 text-lg">10-Second Cram Sheet Generator</h3>
-              </div>
-              <button 
-                onClick={() => setActiveCramCourse(null)}
-                className="text-slate-400 hover:text-slate-200"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="bg-slate-900 p-5 rounded-2xl border border-slate-700 text-xs space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <strong className="text-amber-400 text-sm">{activeCramCourse.code}: {activeCramCourse.title}</strong>
-                <span className="text-slate-400 font-semibold">{activeCramCourse.level}L | {activeCramCourse.units} Units</span>
-              </div>
-
-              <div>
-                <strong className="text-indigo-300 block mb-1">Module Overview:</strong>
-                <p className="text-slate-300">{activeCramCourse.desc}</p>
-              </div>
-
-              <div>
-                <strong className="text-emerald-300 block mb-1">Key High-Yield Exam Formulas & Concepts:</strong>
-                <ul className="list-disc list-inside text-slate-400 space-y-1">
-                  <li>Core theoretical definitions and primary principles.</li>
-                  <li>Most frequently repeated Covenant past question topics.</li>
-                  <li>Step-by-step problem solving methods & key steps.</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex space-x-3 pt-2">
-              <button
-                onClick={() => {
-                  alert('📄 Downloaded Cram Sheet PDF for ' + activeCramCourse.code);
-                  setActiveCramCourse(null);
-                }}
-                className="flex-1 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2"
-              >
-                <Download className="w-4 h-4" />
-                <span>Save 1-Page Summary PDF</span>
-              </button>
-            </div>
-
+            ))}
           </div>
         </div>
-      )}
+      );
+    }
 
-      {}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-3xl border border-slate-700 max-w-lg w-full p-6 shadow-2xl space-y-5">
-            
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <h3 className="font-bold text-slate-100 text-base">Creator Branding & Feedback</h3>
-              </div>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-300 font-bold mb-1.5">Edit Founder / Creator Name:</label>
-                <input
-                  type="text"
-                  value={creatorName}
-                  onChange={(e) => setCreatorName(e.target.value)}
-                  className="w-full bg-slate-900 text-slate-200 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-amber-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-bold mb-1.5">Send Feedback to Development Team:</label>
-                <textarea
-                  rows={3}
-                  placeholder="Type suggestions, missing courses, or feature requests..."
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  className="w-full bg-slate-900 text-slate-200 p-3 rounded-xl border border-slate-700 focus:outline-none focus:border-amber-400"
-                />
-              </div>
-
-              {feedbackSent && (
-                <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 font-medium">
-                  ✓ Feedback submitted successfully!
-                </div>
-              )}
-            </div>
-
-            <div className="flex space-x-3 pt-2">
-              <button
-                onClick={() => {
-                  if (feedbackText.trim()) {
-                    setFeedbackSent(true);
-                    setTimeout(() => setFeedbackSent(false), 3000);
-                  }
-                  setIsModalOpen(false);
-                }}
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2"
-              >
-                <Send className="w-4 h-4" />
-                <span>Save Creator Name & Send Feedback</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
+    ReactDOM.createRoot(document.getElementById('root')).render(<EduTrackApp />);
+  </script>
+</body>
+</html>
